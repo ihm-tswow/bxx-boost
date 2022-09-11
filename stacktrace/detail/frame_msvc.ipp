@@ -125,6 +125,7 @@ inline void trim_right_zeroes(std::string& s) {
     }
 }
 
+void bxx_append_library_path(com_holder<::IDebugSymbols>& idebug);
 class debugging_symbols: boost::noncopyable {
     static void try_init_com(com_holder< ::IDebugSymbols>& idebug, const com_global_initer& com) BOOST_NOEXCEPT {
         com_holder< ::IDebugClient> iclient(com);
@@ -155,7 +156,8 @@ class debugging_symbols: boost::noncopyable {
         }
 
         // No cheking: QueryInterface sets the output parameter to NULL in case of error.
-        iclient->QueryInterface(__uuidof(IDebugSymbols), idebug.to_void_ptr_ptr());
+        if (!iclient->QueryInterface(__uuidof(IDebugSymbols), idebug.to_void_ptr_ptr()))
+            bxx_append_library_path(idebug);
     }
 
 #ifndef BOOST_STACKTRACE_USE_WINDBG_CACHED
